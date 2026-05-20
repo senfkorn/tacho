@@ -2,8 +2,6 @@ import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import sensor
 
-DEPENDENCIES = []
-
 pcnt_ns = cg.esphome_ns.namespace("pcnt_encoder")
 PCNTEncoder = pcnt_ns.class_("PCNTEncoder", cg.PollingComponent)
 
@@ -11,8 +9,8 @@ CONFIG_SCHEMA = sensor.sensor_schema(
     unit_of_measurement="m/min",
     accuracy_decimals=2,
 ).extend({
-    cv.Required("pin_a"): cv.int_,
-    cv.Required("pin_b"): cv.int_,
+    cv.Required("pin_a"): cv.gpio_pin,
+    cv.Required("pin_b"): cv.gpio_pin,
     cv.Required("meters_per_pulse"): cv.float_,
     cv.Optional("distance"): sensor.sensor_schema(
         unit_of_measurement="m",
