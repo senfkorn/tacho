@@ -23,11 +23,9 @@ CONFIG_SCHEMA = sensor.sensor_schema(
 
 
 def to_code(config):
-    # GPIO pins (ESPHome 2026 way)
     pin_a = yield cg.gpio_pin_expression(config["pin_a"])
     pin_b = yield cg.gpio_pin_expression(config["pin_b"])
 
-    # Create C++ component
     var = cg.new_Pvariable(
         config["id"],
         pin_a,
@@ -35,14 +33,13 @@ def to_code(config):
         config["meters_per_pulse"],
     )
 
-    # register ONLY as component (IMPORTANT)
+    # ONLY THIS (kritisch!)
     yield cg.register_component(var, config)
 
-    # main speed sensor
-    speed_sensor = yield sensor.new_sensor(config)
-    cg.add(var.set_speed_sensor(speed_sensor))
+    # create sensors as OUTPUT ONLY (no registration as component)
+    speed = yield sensor.new_sensor(config)
+    cg.add(var.set_speed_sensor(speed))
 
-    # optional distance sensor
     if "distance" in config:
-        dist_sensor = yield sensor.new_sensor(config["distance"])
-        cg.add(var.set_distance_sensor(dist_sensor))
+        dist = yield sensor.new_sensor(config["distance"])
+        cg.add(var.set_distance_sensor(dist))
