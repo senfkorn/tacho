@@ -1,0 +1,1 @@
+# empty file (required for ESPHome external component package)
