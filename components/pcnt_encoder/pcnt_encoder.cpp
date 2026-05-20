@@ -42,11 +42,11 @@ void PCNTEncoder::update() {
   float seconds = this->get_update_interval() / 1000.0f;
   float speed_m_min = (delta_m / seconds) * 60.0f;
 
-  if (speed_sensor != nullptr)
-    speed_sensor->publish_state(speed_m_min);
+  if (speed_sensor_ != nullptr)
+    speed_sensor_->publish_state(speed_m_min);
 
-  if (distance_sensor != nullptr)
-    distance_sensor->publish_state(total_distance_);
+  if (distance_sensor_ != nullptr)
+    distance_sensor_->publish_state(total_distance_);
 }
 
 }  // namespace pcnt_encoder
