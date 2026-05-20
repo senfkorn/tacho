@@ -1,8 +1,9 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import sensor
-from esphome.const import CONF_PIN
 import esphome.pins as pins
+
+DEPENDENCIES = []
 
 pcnt_ns = cg.esphome_ns.namespace("pcnt_encoder")
 PCNTEncoder = pcnt_ns.class_("PCNTEncoder", cg.PollingComponent)
@@ -22,9 +23,11 @@ CONFIG_SCHEMA = sensor.sensor_schema(
 
 
 def to_code(config):
+    # GPIO pins (ESPHome 2026 way)
     pin_a = yield cg.gpio_pin_expression(config["pin_a"])
     pin_b = yield cg.gpio_pin_expression(config["pin_b"])
 
+    # Create C++ component
     var = cg.new_Pvariable(
         config["id"],
         pin_a,
@@ -32,9 +35,14 @@ def to_code(config):
         config["meters_per_pulse"],
     )
 
+    # register ONLY as component (IMPORTANT)
     yield cg.register_component(var, config)
-    yield sensor.register_sensor(var, config)
 
+    # main speed sensor
+    speed_sensor = yield sensor.new_sensor(config)
+    cg.add(var.set_speed_sensor(speed_sensor))
+
+    # optional distance sensor
     if "distance" in config:
-        sens = yield sensor.new_sensor(config["distance"])
-        cg.add(var.set_distance_sensor(sens))
+        dist_sensor = yield sensor.new_sensor(config["distance"])
+        cg.add(var.set_distance_sensor(dist_sensor))
